@@ -10,7 +10,7 @@ export default function authorize(roles: any = []) {
     }
 
     return [
-        jwt({ secret, algorithms: ['HS256'] }),
+        jwt({ secret, algorithms: ['HS256'], requestProperty: 'user' }),
         async (req: any, res: any, next: any) => {
             const account = await db.Account.findByPk(req.user.id);
 
@@ -19,8 +19,10 @@ export default function authorize(roles: any = []) {
             }
 
             req.user.role = account.role;
-            const refreshToken = await db.RefreshTokens();
-            req.user.ownsToken = (token: any) => !!refreshToken.find((x: any) => x.token === token);
+            const refreshTokens = await db.RefreshToken.findAll(
+                { where: { accountId: account.id } });
+            req.user.ownsToken = (token: any) => !!refreshTokens.find(
+                (x: any) => x.token === token);
             next();
         }
     ];

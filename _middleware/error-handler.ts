@@ -7,7 +7,7 @@ export default function errorHandler(err: any, req: Request, res: Response, next
             const statusCode = is404 ? 404 : 400;
             return res.status(statusCode).json({ message: err });
         case err.name === 'UnauthorizedError':
-            return res.status(401).json({ message: 'Unauthorized' });
+            return res.status(401).json({ message: 'Unauthorized: ' + err.message });
         default:
             return res.status(500).json({ message: err.message });
     }

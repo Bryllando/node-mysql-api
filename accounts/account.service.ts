@@ -26,7 +26,8 @@ export default {
 async function authenticate({ email, password, ipAddress }: any) {
     const account = await db.Account.scope('withHash').findOne({ where: { email } });
 
-    if (!account || !account.isVerified || !(await bcrypt.compare(password, account.passwordHash))) {
+    if (!account || !account.isVerified || !(await bcrypt.compare(
+        password, account.passwordHash))) {
         throw 'Email or password is incorrect';
     }
 
@@ -71,8 +72,11 @@ async function revokeToken({ token, ipAddress }: any) {
 }
 
 async function register(params: any, origin: any) {
-    if (await db.Account.findOne({ where: { email: params.email } })) {
-        return await sendAlreadyRegisteredEmail(params.email, origin);
+    const existingAccount = await db.Account.findOne({ where: { email: params.email } });
+    if (existingAccount) {
+        existingAccount.verificationToken = existingAccount.verificationToken || randomTokenString();
+        await existingAccount.save();
+        return await sendVerificationEmail(existingAccount, origin);
     }
 
     const account = new db.Account(params);
@@ -160,7 +164,8 @@ async function create(params: any) {
 async function update(id: any, params: any) {
     const account = await getAccount(id);
 
-    if (params.email && account.email !== params.email && await db.Account.findOne({ where: { email: params.email } })) {
+    if (params.email && account.email !== params.email && await db.Account.findOne(
+        { where: { email: params.email } })) {
         throw 'Email "' + params.email + '" is already taken';
     }
 
