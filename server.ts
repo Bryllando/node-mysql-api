@@ -30,6 +30,9 @@ app.use('/accounts', accountsController);
 
 app.use('/api-docs', swaggerDocs);
 
+// Redirect root to Swagger UI
+app.get('/', (req, res) => res.redirect('/api-docs'));
+
 app.use(errorHandler);
 
 const port = process.env.PORT || 4000;
