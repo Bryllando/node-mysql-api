@@ -30,7 +30,7 @@ app.use('/accounts', accountsController);
 
 app.use('/api-docs', swaggerDocs);
 
-// Redirect root to Swagger UI
+// redirect / to /api-docs
 app.get('/', (req, res) => res.redirect('/api-docs'));
 
 app.use(errorHandler);
