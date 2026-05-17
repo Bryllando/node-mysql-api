@@ -6,8 +6,8 @@ info:
 
 
 servers:
- - url: http://localhost:4000
-   description: Local development server
+ - url: /
+   description: Current server
 
 
 paths:
