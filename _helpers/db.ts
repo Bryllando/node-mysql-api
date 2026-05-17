@@ -1,4 +1,4 @@
-import config from '../config.json';
+import config from '../config';
 import mysql from 'mysql2/promise';
 import { Sequelize } from 'sequelize';
 import accountModel from '../accounts/account.model';
@@ -10,20 +10,13 @@ export default db;
 initialize();
 
 async function initialize() {
-    const {
-        DB_HOST: host = config.database.host,
-        DB_PORT: port = config.database.port,
-        DB_USER: user = config.database.user,
-        DB_PASSWORD: password = config.database.password,
-        DB_NAME: database = config.database.database,
-        DB_SSL,
-        NODE_ENV
-    } = process.env;
+    const { host, port, user, password, database } = config.database;
+    const { DB_SSL, NODE_ENV } = process.env;
 
     const isProduction = NODE_ENV === 'production';
 
     if (!isProduction) {
-        const connection = await mysql.createConnection({ host, port: Number(port), user, password });
+        const connection = await mysql.createConnection({ host, port, user, password });
         // Create DB if it doesn't exist
         await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`);
         await connection.end();

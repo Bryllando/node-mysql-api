@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_json_1 = __importDefault(require("../config.json"));
+const config_1 = __importDefault(require("../config"));
 const promise_1 = __importDefault(require("mysql2/promise"));
 const sequelize_1 = require("sequelize");
 const account_model_1 = __importDefault(require("../accounts/account.model"));
@@ -12,10 +12,11 @@ const db = {};
 exports.default = db;
 initialize();
 async function initialize() {
-    const { DB_HOST: host = config_json_1.default.database.host, DB_PORT: port = config_json_1.default.database.port, DB_USER: user = config_json_1.default.database.user, DB_PASSWORD: password = config_json_1.default.database.password, DB_NAME: database = config_json_1.default.database.database, DB_SSL, NODE_ENV } = process.env;
+    const { host, port, user, password, database } = config_1.default.database;
+    const { DB_SSL, NODE_ENV } = process.env;
     const isProduction = NODE_ENV === 'production';
     if (!isProduction) {
-        const connection = await promise_1.default.createConnection({ host, port: Number(port), user, password });
+        const connection = await promise_1.default.createConnection({ host, port, user, password });
         // Create DB if it doesn't exist
         await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`);
         await connection.end();

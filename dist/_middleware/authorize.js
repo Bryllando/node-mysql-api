@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = authorize;
 const express_jwt_1 = require("express-jwt");
-const config_json_1 = __importDefault(require("../config.json"));
+const config_1 = __importDefault(require("../config"));
 const db_1 = __importDefault(require("../_helpers/db"));
-const secret = process.env.JWT_SECRET || config_json_1.default.secret;
+const secret = config_1.default.secret;
 function authorize(roles = []) {
     if (typeof roles === 'string') {
         roles = [roles];
