@@ -95,6 +95,7 @@ function register(req: any, res: any, next: any) {
 }
 
 function verifyEmailSchema(req: any, res: any, next: any) {
+    if (!req.body.token && req.query.token) req.body.token = req.query.token;
     const schema = Joi.object({
         token: Joi.string().required()
     });
@@ -121,6 +122,7 @@ function forgotPassword(req: any, res: any, next: any) {
 }
 
 function validateResetTokenSchema(req: any, res: any, next: any) {
+    if (!req.body.token && req.query.token) req.body.token = req.query.token;
     const schema = Joi.object({
         token: Joi.string().required()
     });
@@ -134,6 +136,7 @@ function validateResetToken(req: any, res: any, next: any) {
 }
 
 function resetPasswordSchema(req: any, res: any, next: any) {
+    if (!req.body.token && req.query.token) req.body.token = req.query.token;
     const schema = Joi.object({
         token: Joi.string().required(),
         password: Joi.string().min(6).required(),
@@ -218,11 +221,12 @@ function _delete(req: any, res: any, next: any) {
 }
 
 function setTokenCookie(res: any, token: any) {
+    const isProduction = process.env.NODE_ENV === 'production';
     const cookieOptions = {
         httpOnly: true,
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        secure: process.env.COOKIE_SECURE === 'true',
-        sameSite: (process.env.COOKIE_SAMESITE as any) || 'lax'
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax'
     };
     res.cookie('refreshToken', token, cookieOptions);
 }
