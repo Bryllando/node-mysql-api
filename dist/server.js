@@ -13,6 +13,7 @@ const error_handler_1 = __importDefault(require("./_middleware/error-handler"));
 const accounts_controller_1 = __importDefault(require("./accounts/accounts.controller"));
 const swagger_1 = __importDefault(require("./_helpers/swagger"));
 const app = (0, express_1.default)();
+app.set('trust proxy', true);
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
 app.use((0, cookie_parser_1.default)());

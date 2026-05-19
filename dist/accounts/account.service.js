@@ -28,8 +28,11 @@ exports.default = {
 };
 async function authenticate({ email, password, ipAddress }) {
     const account = await db_1.default.Account.scope('withHash').findOne({ where: { email } });
-    if (!account || !account.isVerified || !(await bcryptjs_1.default.compare(password, account.passwordHash))) {
+    if (!account || !(await bcryptjs_1.default.compare(password, account.passwordHash))) {
         throw 'Email or password is incorrect';
+    }
+    if (!account.isVerified) {
+        throw 'Account is not verified';
     }
     const jwtToken = generateJwtToken(account);
     const refreshToken = generateRefreshToken(account, ipAddress);
