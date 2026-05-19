@@ -10,6 +10,8 @@ import swaggerDocs from './_helpers/swagger';
 
 const app = express();
 
+app.set('trust proxy', true);
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());

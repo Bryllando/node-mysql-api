@@ -42,7 +42,7 @@ function authenticate(req: any, res: any, next: any) {
 }
 
 function refreshToken(req: any, res: any, next: any) {
-    const token = req.cookies.refreshToken;
+    const token = req.body.token || req.cookies.refreshToken;
     if (!token) return res.status(400).json({ message: 'Token is required' });
 
     const ipAddress = req.ip;
