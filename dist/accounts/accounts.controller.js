@@ -43,6 +43,8 @@ function authenticate(req, res, next) {
 }
 function refreshToken(req, res, next) {
     const token = req.cookies.refreshToken;
+    if (!token)
+        return res.status(400).json({ message: 'Token is required' });
     const ipAddress = req.ip;
     account_service_1.default.refreshToken({ token, ipAddress })
         .then(({ refreshToken, ...account }) => {
@@ -87,6 +89,8 @@ function register(req, res, next) {
         .catch(next);
 }
 function verifyEmailSchema(req, res, next) {
+    if (!req.body.token && req.query.token)
+        req.body.token = req.query.token;
     const schema = joi_1.default.object({
         token: joi_1.default.string().required()
     });
@@ -109,6 +113,8 @@ function forgotPassword(req, res, next) {
         .catch(next);
 }
 function validateResetTokenSchema(req, res, next) {
+    if (!req.body.token && req.query.token)
+        req.body.token = req.query.token;
     const schema = joi_1.default.object({
         token: joi_1.default.string().required()
     });
@@ -120,6 +126,8 @@ function validateResetToken(req, res, next) {
         .catch(next);
 }
 function resetPasswordSchema(req, res, next) {
+    if (!req.body.token && req.query.token)
+        req.body.token = req.query.token;
     const schema = joi_1.default.object({
         token: joi_1.default.string().required(),
         password: joi_1.default.string().min(6).required(),
@@ -194,11 +202,12 @@ function _delete(req, res, next) {
         .catch(next);
 }
 function setTokenCookie(res, token) {
+    const isProduction = process.env.NODE_ENV === 'production';
     const cookieOptions = {
         httpOnly: true,
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        secure: process.env.COOKIE_SECURE === 'true',
-        sameSite: process.env.COOKIE_SAMESITE || 'lax'
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax'
     };
     res.cookie('refreshToken', token, cookieOptions);
 }

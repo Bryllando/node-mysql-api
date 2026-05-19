@@ -13,7 +13,7 @@ function model(sequelize) {
         replacedByToken: { type: sequelize_1.DataTypes.STRING },
         isExpired: {
             type: sequelize_1.DataTypes.VIRTUAL,
-            get() { return Date.now() >= this.expires; }
+            get() { return new Date() >= new Date(this.expires); }
         },
         isActive: {
             type: sequelize_1.DataTypes.VIRTUAL,

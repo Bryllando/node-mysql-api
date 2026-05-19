@@ -44,7 +44,7 @@ async function refreshToken({ token, ipAddress }) {
     const refreshToken = await getRefreshToken(token);
     const account = await refreshToken.getAccount();
     const newRefreshToken = generateRefreshToken(account, ipAddress);
-    refreshToken.revoked = Date.now();
+    refreshToken.revoked = new Date();
     refreshToken.revokedByIp = ipAddress;
     refreshToken.replacedByToken = newRefreshToken.token;
     await refreshToken.save();
@@ -58,7 +58,7 @@ async function refreshToken({ token, ipAddress }) {
 }
 async function revokeToken({ token, ipAddress }) {
     const refreshToken = await getRefreshToken(token);
-    refreshToken.revoked = Date.now();
+    refreshToken.revoked = new Date();
     refreshToken.revokedByIp = ipAddress;
     await refreshToken.save();
 }
@@ -81,7 +81,7 @@ async function verifyEmail({ token }) {
     const account = await db_1.default.Account.findOne({ where: { verificationToken: token } });
     if (!account)
         throw 'Verification failed';
-    account.verified = Date.now();
+    account.verified = new Date();
     account.verificationToken = null;
     await account.save();
 }
@@ -98,7 +98,7 @@ async function validateResetToken({ token }) {
     const account = await db_1.default.Account.findOne({
         where: {
             resetToken: token,
-            resetTokenExpires: { [sequelize_1.Op.gt]: Date.now() }
+            resetTokenExpires: { [sequelize_1.Op.gt]: new Date() }
         }
     });
     if (!account)
@@ -108,7 +108,7 @@ async function validateResetToken({ token }) {
 async function resetPassword({ token, password }) {
     const account = await validateResetToken({ token });
     account.passwordHash = await hash(password);
-    account.passwordReset = Date.now();
+    account.passwordReset = new Date();
     account.resetToken = null;
     await account.save();
 }
@@ -125,7 +125,7 @@ async function create(params) {
         throw 'Email "' + params.email + '" is already registered';
     }
     const account = new db_1.default.Account(params);
-    account.verified = Date.now();
+    account.verified = new Date();
     account.passwordHash = await hash(params.password);
     await account.save();
     return basicDetails(account);
@@ -139,7 +139,7 @@ async function update(id, params) {
         params.passwordHash = await hash(params.password);
     }
     Object.assign(account, params);
-    account.updated = Date.now();
+    account.updated = new Date();
     await account.save();
     return basicDetails(account);
 }
